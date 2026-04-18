@@ -1,0 +1,9 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: Illia Makarov
+    changes:
+    - modifyDataType:
+        tableName: user
+        columnName: pk
+        newDataType: VARCHAR(100)

@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: iam-api-configmap
+  labels:
+    {{- include "deps-iam.labels" . | nindent 4 }}
+data:
+  ENV: {{ .Values.iam_settings.ENV }}
+  DATABASE_PORT: '{{ .Values.iam_settings.DATABASE_PORT }}'
+  DATABASE_DIALECT: {{ .Values.iam_settings.DATABASE_DIALECT }}
+  DATABASE_DRIVER: {{ .Values.iam_settings.DATABASE_DRIVER }}
+  DATABASE_REQUIRE_SECURE_TRANSPORT: '{{ .Values.iam_settings.DATABASE_REQUIRE_SECURE_TRANSPORT }}'
+  {{ if .Values.iam_settings.DATABASE_REQUIRE_SECURE_TRANSPORT }}
+  DATABASE_SSLKEY: {{ .Values.iam_settings.DATABASE_SSLKEY_PATH }}
+  DATABASE_SSLCERT: {{ .Values.iam_settings.DATABASE_SSLCERT_PATH }}
+  DATABASE_SSLROOTCERT: {{ .Values.iam_settings.DATABASE_SSLROOTCERT_PATH }}
+  {{ end }}
+  VPN_DISCLAIMER: {{ .Values.iam_settings.VPN_DISCLAIMER | quote }}
+  AUTH_VERIFY_SSL: {{ .Values.iam_settings.AUTH_VERIFY_SSL | quote }}
+  API_KEY_AUTH: {{ .Values.iam_settings.API_KEY_AUTH | quote }}
+  MESSAGING_MODE: {{ .Values.iam_settings.MESSAGING_MODE | quote }}
+  MESSAGE_POLLING_PERIOD: {{ .Values.iam_settings.MESSAGE_POLLING_PERIOD | quote }}
+  MESSAGE_POLLING_BATCH_SIZE: {{ .Values.iam_settings.MESSAGE_POLLING_BATCH_SIZE | quote }}
+  DOCUMENTATION_ENABLED: {{ .Values.iam_settings.DOCUMENTATION_ENABLED | quote }}
+  KAFKA_GROUP_ID: '{{ .Values.iam_settings.KAFKA_GROUP_ID }}'
+  EXTERNAL_URL: '{{ .Values.iam_settings.EXTERNAL_URL }}'
+  RABBITMQ_TLS_DLX_PER_QUEUE: '{{ .Values.iam_settings.RABBITMQ_TLS_DLX_PER_QUEUE }}'
+  RABBITMQ_DLX_PER_QUEUE: '{{ .Values.iam_settings.RABBITMQ_DLX_PER_QUEUE }}'
+  LOG_LEVEL: '{{ .Values.iam_settings.LOG_LEVEL }}'
+  CACHE_ENABLED: '{{ .Values.iam_settings.CACHE_ENABLED }}'
+  CACHE_TTL: '{{ .Values.iam_settings.CACHE_TTL }}'
+  CACHE_MAXSIZE: '{{ .Values.iam_settings.CACHE_MAXSIZE }}'
+  {{ if .Values.iam_settings.RABBITMQ_TLS_ENABLED }}
+  RABBITMQ_TLS_HOST: '{{ .Values.iam_settings.RABBITMQ_TLS_HOST }}'
+  RABBITMQ_TLS_PORT: '{{ .Values.iam_settings.RABBITMQ_TLS_PORT }}'
+  RABBITMQ_TLS_USER: '{{ .Values.iam_settings.RABBITMQ_TLS_USER }}'
+  RABBITMQ_TLS_VHOST: '{{ .Values.iam_settings.RABBITMQ_TLS_VHOST }}'
+  RABBITMQ_TLS_SUBJECT: '{{ .Values.iam_settings.RABBITMQ_TLS_SUBJECT }}'
+  RABBITMQ_TLS_CA_CERT: '{{ .Values.iam_settings.RABBITMQ_TLS_CA_CERT }}'
+  RABBITMQ_TLS_CLIENT_CERT: '{{ .Values.iam_settings.RABBITMQ_TLS_CLIENT_CERT }}'
+  RABBITMQ_TLS_CLIENT_KEY: '{{ .Values.iam_settings.RABBITMQ_TLS_CLIENT_KEY }}'
+  {{ end }}
+  {{ if .Values.iam_settings.message_broker_asb_without_manage_permission }}
+  ASB_SUBSCRIPTION_STRATEGY: '{{ .Values.iam_settings.ASB_SUBSCRIPTION_STRATEGY }}'
+  {{ end }}
+  ASB_TOPIC_NAME: '{{ .Values.iam_settings.ASB_TOPIC_NAME }}'
+
+  # Telemetry
+  INSTRUMENTATION_ENABLED: '{{ .Values.iam_settings.INSTRUMENTATION_ENABLED }}'
+  SERVICE_NAME: '{{ .Values.iam_settings.SERVICE_NAME }}'
+  EXPORTER_TYPE: '{{ .Values.iam_settings.EXPORTER_TYPE }}'

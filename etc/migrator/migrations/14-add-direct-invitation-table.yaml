@@ -1,0 +1,55 @@
+databaseChangeLog:
+
+- changeSet:
+    id: 1
+    author: Rimma Avakimova
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+              primaryKeyName: invitation_pkey
+            name: pk
+            type: SERIAL
+        - column:
+            constraints:
+              nullable: false
+            name: inviter_pk
+            type: VARCHAR
+        - column:
+            constraints:
+              nullable: false
+            name: organisation_pk
+            type: VARCHAR
+        - column:
+            constraints:
+              nullable: false
+            name: user_email
+            type: VARCHAR(100)
+        tableName: direct_invitation
+    rollback:
+      - dropTable:
+        - tableName: direct_invitation
+
+- changeSet:
+    id: 2
+    author: Rimma Avakimova
+    changes:
+    - addForeignKeyConstraint:
+        baseTableName: direct_invitation
+        baseColumnNames: inviter_pk
+        constraintName: inviter_pk_fkey
+        onDelete: CASCADE
+        onUpdate: CASCADE
+        referencedTableName: user
+        referencedColumnNames: pk
+    - addForeignKeyConstraint:
+        baseTableName: direct_invitation
+        baseColumnNames: organisation_pk
+        constraintName: organisation_pk_fkey
+        onDelete: CASCADE
+        onUpdate: CASCADE
+        referencedTableName: organisation
+        referencedColumnNames: pk
+

@@ -1,0 +1,21 @@
+databaseChangeLog:
+
+- changeSet:
+    id: 1
+    author: Anton Novikau3
+    changes:
+    - createTable:
+        columns:
+        - column:
+            name: pk
+            type: SERIAL
+        - column:
+            name: destination
+            type: VARCHAR
+        - column:
+            name: payload
+            type: VARCHAR
+        - column:
+            name: headers
+            type: JSONB
+        tableName: message_outbox

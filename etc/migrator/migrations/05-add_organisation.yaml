@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Siarhei Shviadko
+      changes:
+        - createTable:
+            tableName: organisation
+            columns:
+              - column:
+                  name: pk
+                  type: SERIAL
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: organisation_pk
+              - column:
+                  name: name
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            constraintName: organisation_unique_name_constraint
+            columnNames: name
+            tableName: organisation

@@ -1,0 +1,131 @@
+{{- if .Values.vault_settings.hashicorp_vault }}
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: {{ .Values.csi.csi_default_name }}
+spec:
+  provider: vault
+  secretObjects:
+  - data:
+    - key: app-secret-key
+      objectName: app-secret-key
+    - key: keycloak-certs-endpoint
+      objectName: keycloak-certs-endpoint
+    - key: message-broker-connection-string
+      objectName: message-broker-connection-string
+    - key: message-broker-driver
+      objectName: message-broker-driver
+    - key: customization-url
+      objectName: customization-url
+    - key: userinfo-endpoint
+      objectName: userinfo-endpoint
+    - key: user-guide-link
+      objectName: user-guide-link
+    - key: host
+      objectName: host
+    - key: login
+      objectName: login
+    - key: password
+      objectName: password
+    - key: port
+      objectName: port
+    - key: database-db
+      objectName: database-db
+    - key: database-password
+      objectName: database-password
+    - key: database-user
+      objectName: database-user
+    - key: database-host
+      objectName: database-host
+    - key: access-mode
+      objectName: access-mode
+    - key: auth-enabled
+      objectName: auth-enabled
+    - key: feature-personal-org
+      objectName: feature-personal-org
+    secretName: {{ .Values.secrets.deps_iam.secretName }}
+    type: Opaque
+  parameters:
+    roleName: {{ .Values.csi.roleName }}
+    vaultAddress: "https://vault_host"
+    vaultNamespace: "vault_namespace"
+    vaultKubernetesMountPath: {{ .Values.csi.vaultKubernetesMountPath }}
+    vaultSkipTLSVerify: "true"
+    #vaultCACertPath: ""
+    objects: |
+      - objectName: "feature-personal-org"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/feature-flags"
+        secretKey: "feature-personal-org"
+
+      - objectName: "database-db"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/iam-database"
+        secretKey: "database-db"
+
+      - objectName: "database-password"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/iam-database"
+        secretKey: "database-password"
+
+      - objectName: "database-user"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/iam-database"
+        secretKey: "database-user"
+
+      - objectName: "port"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/smtp"
+        secretKey: "port"
+
+      - objectName: "password"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/smtp"
+        secretKey: "password"
+
+      - objectName: "login"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/smtp"
+        secretKey: "login"
+
+      - objectName: "from-address"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/smtp"
+        secretKey: "from-address"
+
+      - objectName: "host"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/smtp"
+        secretKey: "host"
+
+      - objectName: "userinfo-endpoint"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/userinfo-endpoint"
+        secretKey: "userinfo-endpoint"
+
+      - objectName: "customization-url"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/customization-url"
+        secretKey: "customization-url"
+
+      - objectName: "message-broker-driver"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/message-broker"
+        secretKey: "message-broker-driver"
+
+      - objectName: "message-broker-connection-string"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/message-broker"
+        secretKey: "message-broker-connection-string"
+
+      - objectName: "app-secret-key"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/app-secret-key"
+        secretKey: "app-secret-key"
+
+      - objectName: "keycloak-certs-endpoint"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/keycloak-certs-endpoint"
+        secretKey: "keycloak-certs-endpoint"
+
+      - objectName: "user-guide-link"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/deps-iam/user-guide-link"
+        secretKey: "user-guide-link"
+
+      - objectName: "database-host"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/common-secret"
+        secretKey: "database-host"
+
+      - objectName: "access-mode"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/common-secret"
+        secretKey: "access-mode"
+
+      - objectName: "auth-enabled"
+        secretPath: "{{ .Values.csi.vault_namespace }}/data/common-secret"
+        secretKey: "auth-enabled"
+{{- end }}

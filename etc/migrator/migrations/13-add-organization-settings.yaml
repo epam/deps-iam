@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Elchyn Cheliabiyeu
+      changes:
+        - addColumn:
+            tableName: organisation
+            columns:
+              - column:
+                  name: customization_url
+                  type: VARCHAR
+                  constraints:
+                    nullable: true

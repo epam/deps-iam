@@ -1,0 +1,12 @@
+[submodule "vendors/deps-polling-publisher"]
+	path = vendors/deps-polling-publisher
+	url = git@github.com:epam/deps-polling-publisher.git
+[submodule "vendors/deps-pipelines"]
+	path = vendors/deps-pipelines
+	url = git@github.com:epam/deps-pipelines.git
+[submodule "vendors/deps-observability-instrumentation"]
+	path = vendors/deps-observability-instrumentation
+	url = git@github.com:epam/deps-observability-instrumentation.git
+[submodule "vendors/deps-message-flow"]
+	path = vendors/deps-message-flow
+	url = ../deps-message-flow.git

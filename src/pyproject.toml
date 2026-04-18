@@ -1,0 +1,68 @@
+[tool.poetry]
+name = "deps-iam"
+version = "0.1.0"
+description = "Identity and Access management for DEPS"
+authors = []
+
+[tool.poetry.dependencies]
+python = "~3.12"
+pydantic = "^2.0"
+pydantic-settings = "^2.0"
+
+fastapi = "^0.120"
+dependency-injector = "^4.48.0"
+psycopg2-binary = "^2.9.5"
+uvicorn = "^0.18.3"
+click = "^8.1.3"
+cachetools = "^5.3.0"
+SQLAlchemy = "1.3.12"
+authlib = ">=1.6.4"
+
+deps-message-flow = { path = "../vendors/deps-message-flow/src", extras = ["deps-asb", "deps-kafka", "deps-rabbitmq", "deps-transactional-messaging"], develop = true }
+deps-observability-instrumentation = { path = "../vendors/deps-observability-instrumentation", develop = true }
+
+# Formatters
+openpyxl = "3.0.9"
+Jinja2 = "^3.1.2"
+
+[tool.poetry.dev-dependencies]
+mypy = "^1.5.1"
+bandit = "^1.7.5"
+flake8 = "^6.1.0"
+wemake-python-styleguide = "^0.18"
+isort = "^5.12.0"
+pytest = "^7.4.2"
+coverage = "^5.5"
+factory-boy = "^3.2.0"
+pytest-factoryboy = "^2.6.0"
+pytest-mock = "^3.11.1"
+requests-mock = "^1.12.1"
+pytest-unordered = "^0.5.2"
+black = "^23.7.0"
+types-cachetools = "^5.3.0.0"
+flake8-commas-x = "^3.0.0"
+httpx = "^0.27.0"
+
+# Debug
+ipdb = "^0.13.11"
+wdb = "^3.3.0"
+
+[tool.poetry.group.dev.dependencies]
+types-requests = "^2.31.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.extras]
+datasource = ["datasource"]
+
+[tool.black]
+line-length = 120
+target-version = ['py312']
+exclude = '''
+(
+    .venv
+    | vendors
+)
+'''

@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Mark Kanaplianik
+      changes:
+        - addUniqueConstraint:
+            constraintName: unique_user_email
+            columnNames: email
+            tableName: user
+        - addNotNullConstraint:
+            constraintName: not_null_user_email
+            columnName: email
+            tableName: user

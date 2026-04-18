@@ -1,0 +1,2 @@
+class FileStorageRequestError(Exception):
+    pass

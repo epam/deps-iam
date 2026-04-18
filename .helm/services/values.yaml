@@ -1,0 +1,680 @@
+# Default values for deps-backend.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Secrets declaration
+# Precreate them before deploy
+# kubectl create secret generic celery-broker-url --from-literal=celery-broker-url=<pyamqp://USERNAME:PASSWORD@RABBITMQ_SERVICE:5672/VHOST>
+# kubectl create secret generic celery-backend-url --from-literal=celery-backend-url=<redis://:PASSWORD@REDIS_SERVICE:6379/0>
+# kubectl create secret generic app-secret-key --from-literal=app-secret-key='<APP_SECRET_KEY>'
+# kubectl create secret generic database-user-secret --from-literal=database-user-secret='<database-user-password>'
+# kubectl create secret generic database-work-user-secret --from-literal=database-work-user-secret='<database-work-user-secret>'
+# kubectl create secret generic keycloak-certs-endpoint --from-literal=keycloak-certs-endpoint='<https://KEYCLOAK_URL/auth/realms/Test/protocol/openid-connect/certs>'
+# kubectl create secret generic database-host --from-literal=database-host='<DATABASE_HOST>'
+
+secrets:
+  app_secret_key:
+    secretName: app-secret-key
+  iam_database:
+    secretName: iam-database
+  api_key:
+    secretName: api-key
+  keycloak_certs_endpoint:
+    secretName: keycloak-certs-endpoint
+  rabbitmq_password:
+    secretName: rabbitmq-password
+  security_certs:
+    secretName: security-certs
+  frontend_secret:
+    secretName: frontend-secret
+  smtp:
+    secretName: smtp
+  userinfo_endpoint:
+    secretName: userinfo-endpoint
+  common_secret:
+    secretName: common-secret
+  database_ssl_secret:
+    secretName: database-ssl-secret
+  user_guide_link:
+    secretName: user-guide-link
+  deps_iam:
+    secretName: deps-iam
+  telemetry_secrets:
+    secretName: telemetry-secrets
+
+helm_logs_job:
+  serviceAccountName: gitlab-ci
+  image:
+    path: "/base/kubernetes-helm"
+    pullPolicy: IfNotPresent
+    tag: "0.1.1"
+  resources: {}
+
+registry: ""
+env: ""
+
+iam:
+  replicaCount: 1
+  image:
+    path: "/deps-dev-x01/deps-iam-api"
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: artifactory
+  service:
+    type: ClusterIP
+    port: 8000
+  resources:
+    limits:
+      cpu: 200m
+      memory: 800Mi
+    requests:
+      cpu: 100m
+      memory: 350Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+iam_consumer:
+  replicaCount: 1
+  image:
+    path: "/deps-dev-x01/deps-iam-api"
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: artifactory
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+polling_publisher:
+  image:
+    path: "/deps-dev-x01/deps-iam-polling-publisher"
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: artifactory
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+migrator:
+  image:
+    path: "/deps-dev-x01/deps-iam-migrator"
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: artifactory
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+fixtures:
+  image:
+    path: "/deps-dev-x01/deps-iam-migrator"
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: artifactory
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+certs_location:
+  certs_default_path: "/tmp/ssl"
+
+  database_sslcerts_path: "/home/dbcerts"
+
+iam_settings:
+  ENV: development
+  DATABASE_PORT: '5432'
+  DATABASE_DIALECT: postgresql
+  DATABASE_DRIVER: psycopg2
+  DATABASE_REQUIRE_SECURE_TRANSPORT: false
+  DATABASE_SSLKEY_PATH: "/home/dbcerts/tls.key"
+  DATABASE_SSLCERT_PATH: "/home/dbcerts/tls.crt"
+  DATABASE_SSLROOTCERT_PATH: "/home/dbcerts/root.crt"
+
+  VPN_DISCLAIMER: "P.S. Please note that DEPS operates within the EPAM VPN environment. To access the platform please make sure you are connected to EPAM's VPN network before clicking the provided link."
+
+  AUTH_VERIFY_SSL: false
+  API_KEY_AUTH: true
+
+  MESSAGING_MODE: 'transactional_outbox'
+  MESSAGE_POLLING_PERIOD: 1.0
+  MESSAGE_POLLING_BATCH_SIZE: 1
+  DOCUMENTATION_ENABLED: "true"
+
+  RABBITMQ_TLS_ENABLED: false
+  RABBITMQ_TLS_DLX_PER_QUEUE: false
+  RABBITMQ_DLX_PER_QUEUE: false
+
+  KAFKA_GROUP_ID: iam
+
+  EMAIL_INVITATIONS_ENABLED: "true"
+  #EXTERNAL_URL is overwritten by gitlab variables when deploying
+  EXTERNAL_URL: "value-from-gitlab-variables"
+
+  LOG_LEVEL: "INFO"
+  CACHE_ENABLED: false
+  CACHE_TTL: 7200
+  CACHE_MAXSIZE: 100
+
+  # Azure Service Bus
+  ASB_SUBSCRIPTION_STRATEGY: 'no_preparation'
+  ASB_TOPIC_NAME: 'deps-topic'
+  message_broker_asb_without_manage_permission: false
+
+  # Telemetry
+  INSTRUMENTATION_ENABLED: false
+  SERVICE_NAME: deps-iam
+  EXPORTER_TYPE: azure
+
+migration_settings:
+  DATABASE_PORT: '5432'
+
+helm:
+  helm_logs_job_enabled: false
+
+csi:
+  csi_default_name: deps-iam
+  vault_namespace: 'k8s-dev'
+  roleName: 'k8s-dev'
+  vaultKubernetesMountPath: 'kubernetes-dev'
+
+secrets_location:
+  secrets_default_path: "/mnt/secrets-store"
+
+service_account:
+  serviceAccountName: 'deps-develop'
+
+secret_project_id:
+  id: ""
+
+azure_kv_settings:
+  keyvaultName: ""
+  tenantId: ""
+  userAssignedIdentityID: ""
+  resourceGroup: ""
+  subscriptionId: ""
+
+vault_settings:
+  enabled: false
+  hashicorp_vault: false
+  azure_key_vault: false
+  gcp_secret_manager: false
+  aws_secret_manager: false
+  aws_secret_manager_region: ''
+
+vault_enabled:
+  env:
+  - name: FEATURE_PERSONAL_ORG
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: feature-personal-org
+  - name: DATABASE_HOST
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: db-host
+  - name: DATABASE_USER
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: iam-db-user
+  - name: DATABASE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: iam-db-password
+  - name: DATABASE_DB
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: iam-db
+  - name: AUTH_CERTS_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: keycloak-certs-endpoint
+  - name: MESSAGING_DRIVER
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: message-broker-driver
+  - name: MESSAGE_BROKER_CONNECTION_STRING
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: message-broker-connection-string
+  - name: ACCESS_MODE
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: access-mode
+  - name: AUTH_ENABLED
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: auth-enabled
+  - name: DEFAULT_CUSTOMIZATION_URL
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: customization-url
+  - name: USERINFO_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: userinfo-endpoint
+  - name: SMTP_LOGIN
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: smtp-login
+  - name: SMTP_FROM_ADDRESS
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: smtp-from-address
+  - name: SMTP_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: smtp-password
+  - name: SMTP_HOST
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: smtp-host
+  - name: SMTP_PORT
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: smtp-port
+  - name: USER_GUIDE_LINK
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: user-guide-link
+
+vault_disabled:
+  env:
+  - name: FEATURE_PERSONAL_ORG
+    valueFrom:
+      secretKeyRef:
+        name: feature-flags
+        key: feature-personal-org
+  - name: DATABASE_USER
+    valueFrom:
+      secretKeyRef:
+        name: iam-database
+        key: user
+  - name: DATABASE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: iam-database
+        key: password
+  - name: DATABASE_DB
+    valueFrom:
+      secretKeyRef:
+        name: iam-database
+        key: database-db
+  - name: DATABASE_HOST
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: database-host
+  - name: AUTH_CERTS_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: keycloak-certs-endpoint
+        key: keycloak-certs-endpoint
+  - name: MESSAGING_DRIVER
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: message-broker-driver
+  - name: MESSAGE_BROKER_CONNECTION_STRING
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: message-broker-connection-string
+  - name: ACCESS_MODE
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: access-mode
+  - name: AUTH_ENABLED
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: auth-enabled
+  - name: DEFAULT_CUSTOMIZATION_URL
+    valueFrom:
+      secretKeyRef:
+        name: frontend-secret
+        key: customization-url
+  - name: USERINFO_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: userinfo-endpoint
+        key: userinfo-endpoint
+  - name: SMTP_LOGIN
+    valueFrom:
+      secretKeyRef:
+        name: smtp
+        key: login
+  - name: SMTP_FROM_ADDRESS
+    valueFrom:
+      secretKeyRef:
+        name: smtp
+        key: from-address
+  - name: SMTP_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: smtp
+        key: password
+  - name: SMTP_HOST
+    valueFrom:
+      secretKeyRef:
+        name: smtp
+        key: host
+  - name: SMTP_PORT
+    valueFrom:
+      secretKeyRef:
+        name: smtp
+        key: port
+  - name: USER_GUIDE_LINK
+    valueFrom:
+      secretKeyRef:
+        name: user-guide-link
+        key: user-guide-link
+
+vault_enabled_consumer:
+  env:
+  - name: FEATURE_PERSONAL_ORG
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: feature-personal-org
+  - name: DATABASE_HOST
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: db-host
+  - name: DATABASE_USER
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: iam-db-user
+  - name: DATABASE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: iam-db-password
+  - name: DATABASE_DB
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: iam-db
+  - name: AUTH_CERTS_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: keycloak-certs-endpoint
+  - name: MESSAGING_DRIVER
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: message-broker-driver
+  - name: MESSAGE_BROKER_CONNECTION_STRING
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: message-broker-connection-string
+  - name: USERINFO_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: userinfo-endpoint
+  - name: ACCESS_MODE
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: access-mode
+  - name: AUTH_ENABLED
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: auth-enabled
+  - name: DEFAULT_CUSTOMIZATION_URL
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: customization-url
+  - name: SMTP_LOGIN
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: smtp-login
+  - name: SMTP_FROM_ADDRESS
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: smtp-from-address
+  - name: SMTP_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: smtp-password
+  - name: SMTP_HOST
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: smtp-host
+  - name: SMTP_PORT
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: smtp-port
+  - name: USER_GUIDE_LINK
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: user-guide-link
+
+vault_disabled_consumer:
+  env:
+  - name: FEATURE_PERSONAL_ORG
+    valueFrom:
+      secretKeyRef:
+        name: feature-flags
+        key: feature-personal-org
+  - name: DATABASE_USER
+    valueFrom:
+      secretKeyRef:
+        name: iam-database
+        key: user
+  - name: DATABASE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: iam-database
+        key: password
+  - name: DATABASE_DB
+    valueFrom:
+      secretKeyRef:
+        name: iam-database
+        key: database-db
+  - name: DATABASE_HOST
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: database-host
+  - name: AUTH_CERTS_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: keycloak-certs-endpoint
+        key: keycloak-certs-endpoint
+  - name: MESSAGING_DRIVER
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: message-broker-driver
+  - name: MESSAGE_BROKER_CONNECTION_STRING
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: message-broker-connection-string
+  - name: USERINFO_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: userinfo-endpoint
+        key: userinfo-endpoint
+  - name: ACCESS_MODE
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: access-mode
+  - name: AUTH_ENABLED
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: auth-enabled
+  - name: DEFAULT_CUSTOMIZATION_URL
+    valueFrom:
+      secretKeyRef:
+        name: frontend-secret
+        key: customization-url
+  - name: SMTP_LOGIN
+    valueFrom:
+      secretKeyRef:
+        name: smtp
+        key: login
+  - name: SMTP_FROM_ADDRESS
+    valueFrom:
+      secretKeyRef:
+        name: smtp
+        key: from-address
+  - name: SMTP_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: smtp
+        key: password
+  - name: SMTP_HOST
+    valueFrom:
+      secretKeyRef:
+        name: smtp
+        key: host
+  - name: SMTP_PORT
+    valueFrom:
+      secretKeyRef:
+        name: smtp
+        key: port
+  - name: USER_GUIDE_LINK
+    valueFrom:
+      secretKeyRef:
+        name: user-guide-link
+        key: user-guide-link
+
+vault_enabled_polling_publisher:
+  env:
+  - name: FEATURE_PERSONAL_ORG
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: feature-personal-org
+  - name: DATABASE_HOST
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: db-host
+  - name: DATABASE_USER
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: iam-db-user
+  - name: DATABASE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: iam-db-password
+  - name: DATABASE_DB
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: iam-db
+  - name: AUTH_CERTS_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: keycloak-certs-endpoint
+  - name: USERINFO_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: userinfo-endpoint
+  - name: MESSAGING_DRIVER
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: message-broker-driver
+  - name: MESSAGE_BROKER_CONNECTION_STRING
+    valueFrom:
+      secretKeyRef:
+        name: deps-iam
+        key: message-broker-connection-string
+
+vault_disabled_polling_publisher:
+  env:
+  - name: FEATURE_PERSONAL_ORG
+    valueFrom:
+      secretKeyRef:
+        name: feature-flags
+        key: feature-personal-org
+  - name: DATABASE_USER
+    valueFrom:
+      secretKeyRef:
+        name: iam-database
+        key: user
+  - name: DATABASE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: iam-database
+        key: password
+  - name: DATABASE_DB
+    valueFrom:
+      secretKeyRef:
+        name: iam-database
+        key: database-db
+  - name: DATABASE_HOST
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: database-host
+  - name: AUTH_CERTS_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: keycloak-certs-endpoint
+        key: keycloak-certs-endpoint
+  - name: USERINFO_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: userinfo-endpoint
+        key: userinfo-endpoint
+  - name: MESSAGING_DRIVER
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: message-broker-driver
+  - name: MESSAGE_BROKER_CONNECTION_STRING
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: message-broker-connection-string

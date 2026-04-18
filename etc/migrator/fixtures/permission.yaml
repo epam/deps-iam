@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      context: "permission"
+      author: Aliaksandr Tsiustsin
+      runOnChange: true
+      validCheckSum: any
+      changes:
+        - loadUpdateData:
+            file: ./fixtures/data/permission/permission.csv
+            separator: ","
+            encoding: UTF-8
+            tableName: permission
+            primaryKey: "name"

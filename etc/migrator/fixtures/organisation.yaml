@@ -1,0 +1,15 @@
+---
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Raman Salauyou
+      runOnChange: true
+      validCheckSum: any
+      changes:
+        - loadUpdateData:
+            file: ./fixtures/data/organisation/organisation.csv
+            separator: ","
+            encoding: UTF-8
+            tableName: organisation
+            primaryKey: "pk"
+...

@@ -1,0 +1,24 @@
+from pathlib import Path
+
+PROJECT_NAME = "iam"
+DESCRIPTION = ""
+V1_PREFIX = "/v1"
+V2_PREFIX = "/v2"
+BASE_API_PREFIX = "/api/iam"
+API_PREFIX = BASE_API_PREFIX + V1_PREFIX
+V2_API_PREFIX = BASE_API_PREFIX + V2_PREFIX
+SWAGGER_DOC_URL = "/docs"
+API_KEY = "API-Key"
+
+DOCUMENTS_EXCHANGER = "Documents"
+TENANT_EXCHANGER = "Tenant"
+QUEUE = "iam"
+COMMANDS_QUEUE = "iam-commands"
+TENANT_COMMANDS = "TenantCommands"
+TENANT_COMMANDS_REPLIES = "TenantCommandsReplies"
+
+PERSONAL_ORGANISATION_POSTFIX = "Personal"
+SMTP_DEFAULT_FROM = "auto_account_notification@local"
+EMAIL_INVITATION_SUBJECT = "Welcome to DEPS"
+PATH_TO_STATIC_DATA = Path(__file__).parent.parent / "data"
+EMAIL_EVENT_TYPE_HEADER = "X-UNS-EVENT-TYPE"

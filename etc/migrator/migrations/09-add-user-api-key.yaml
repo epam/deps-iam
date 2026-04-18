@@ -1,0 +1,29 @@
+---
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Raman Salauyou
+      changes:
+        - createTable:
+            tableName: user_api_key
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: user_pk_uckey
+                  name: user_pk
+                  type: VARCHAR(50)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: api_key
+                  type: VARCHAR(50)
+        - addForeignKeyConstraint:
+            baseColumnNames: user_pk
+            baseTableName: user_api_key
+            constraintName: user_api_key_fkey
+            onDelete: CASCADE
+            referencedColumnNames: pk
+            referencedTableName: user
+...

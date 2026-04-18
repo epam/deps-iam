@@ -1,0 +1,41 @@
+iam:
+  image:
+    path: "/deps-platform/deps-iam-api"
+  resources:
+    limits:
+      cpu:
+      memory:
+    requests:
+      cpu:
+      memory:
+
+
+iam_consumer:
+  image:
+    path: "/deps-platform/deps-iam-api"
+
+polling_publisher:
+  image:
+    path: "/deps-platform/deps-iam-polling-publisher"
+
+migrator:
+  image:
+    path: "/deps-platform/deps-iam-migrator"
+
+fixtures:
+  image:
+    path: "/deps-platform/deps-iam-migrator"
+
+iam_settings:
+  ENV: perf
+  DATABASE_DB: deps-iam-ds
+  DATABASE_REQUIRE_SECURE_TRANSPORT: false
+
+  EXTERNAL_URL: "https://perf-host"
+
+migration_settings:
+  DATABASE_DB: deps-iam-ds
+  DATABASE_REQUIRE_SECURE_TRANSPORT: false
+
+helm:
+  helm_logs_job_enabled: false

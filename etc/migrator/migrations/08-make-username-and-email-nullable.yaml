@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+       id: 1
+       author: Dzmitry Orgish
+       changes:
+         - dropNotNullConstraint:
+             tableName: user
+             columnName: email
+         - dropNotNullConstraint:
+             tableName: user
+             columnName: username

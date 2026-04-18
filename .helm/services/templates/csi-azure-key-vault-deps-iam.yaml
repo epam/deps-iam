@@ -1,0 +1,140 @@
+{{- if .Values.vault_settings.azure_key_vault }}
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: {{ .Values.csi.csi_default_name }}
+spec:
+  provider: azure
+  secretObjects:
+  - data:
+    - key: app-secret-key
+      objectName: app-secret-key
+    - key: keycloak-certs-endpoint
+      objectName: keycloak-certs-endpoint
+    - key: message-broker-connection-string
+      objectName: message-broker-connection-string
+    - key: message-broker-driver
+      objectName: message-broker-driver
+    - key: userinfo-endpoint
+      objectName: userinfo-endpoint
+    - key: user-guide-link
+      objectName: user-guide-link
+    - key: smtp-host
+      objectName: smtp-host
+    - key: smtp-login
+      objectName: smtp-login
+    - key: smtp-password
+      objectName: smtp-password
+    - key: smtp-port
+      objectName: smtp-port
+    - key: smtp-from-address
+      objectName: smtp-from-address
+    - key: db-host
+      objectName: db-host
+    - key: iam-db-user
+      objectName: iam-db-user
+    - key: iam-db-password
+      objectName: iam-db-password
+    - key: iam-db
+      objectName: iam-db
+    - key: access-mode
+      objectName: access-mode
+    - key: auth-enabled
+      objectName: auth-enabled
+    - key: feature-personal-org
+      objectName: feature-personal-org
+    - key: customization-url
+      objectName: customization-url
+    secretName: {{ .Values.secrets.deps_iam.secretName }}
+    type: Opaque
+  parameters:
+    keyvaultName: {{ .Values.azure_kv_settings.keyvaultName }}
+    tenantId: {{ .Values.azure_kv_settings.tenantId }}
+    vaultKubernetesMountPath: {{ .Values.csi.vaultKubernetesMountPath }}
+    usePodIdentity: "false"
+    useVMManagedIdentity: "true"
+    userAssignedIdentityID: {{ .Values.azure_kv_settings.userAssignedIdentityID }}
+    resourceGroup:  {{ .Values.azure_kv_settings.resourceGroup }}
+    subscriptionId: {{ .Values.azure_kv_settings.subscriptionId }}
+    objects: |
+      array:
+        - |
+          objectName: "customization-url"
+          objectType: secret
+
+        - |
+          objectName: "user-guide-link"
+          objectType: secret
+
+        - |
+          objectName: "feature-personal-org"
+          objectType: secret
+
+        - |
+          objectName: "db-host"
+          objectType: secret
+
+        - |
+          objectName: "iam-db-user"
+          objectType: secret
+
+        - |
+          objectName: "iam-db-password"
+          objectType: secret
+
+        - |
+          objectName: "iam-db"
+          objectType: secret
+
+        - |
+          objectName: "smtp-port"
+          objectType: secret
+
+        - |
+          objectName: "smtp-password"
+          objectType: secret
+        
+        - |
+          objectName: "smtp-from-address"
+          objectType: secret
+
+        - |
+          objectName: "smtp-login"
+          objectType: secret
+
+        - |
+          objectName: "smtp-host"
+          objectType: secret
+
+        - |
+          objectName: "userinfo-endpoint"
+          objectType: secret
+
+        - |
+          objectName: "message-broker-driver"
+          objectType: secret
+
+        - |
+          objectName: "message-broker-connection-string"
+          objectType: secret
+
+        - |
+          objectName: "app-secret-key"
+          objectType: secret
+
+        - |
+          objectName: "keycloak-certs-endpoint"
+          objectType: secret
+
+        - |
+          objectName: "user-guide-link"
+          objectType: secret
+
+        - |
+          objectName: "access-mode"
+          objectType: secret
+
+        - |
+          objectName: "auth-enabled"
+          objectType: secret
+{{- end }}

@@ -1,0 +1,14 @@
+databaseChangeLog:
+
+- changeSet:
+    id: 1
+    author: Rimma Avakimova
+    changes:
+    - addUniqueConstraint:
+        columnNames: organisation_pk, user_email
+        constraintName: unique_organisation_pk_user_email
+        tableName: direct_invitation
+    rollback:
+      - dropUniqueConstraint:  
+          constraintName:  unique_organisation_pk_user_email
+          tableName:  direct_invitation

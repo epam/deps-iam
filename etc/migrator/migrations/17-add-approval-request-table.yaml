@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Mark Kanaplianik
+      changes:
+        - createTable:
+            tableName: approval_request
+            columns:
+              - column:
+                  name: pk
+                  type: SERIAL
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: approval_pkey
+              - column:
+                  name: user_pk
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: organisation_pk
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            columnNames: user_pk, organisation_pk
+            constraintName: unique_user_pk_organisation_pk
+            tableName: approval_request
+      rollback:
+        - dropTable:
+            - tableName: approval_request
+
+  - changeSet:
+      id: 2
+      author: Mark Kanaplianik
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: approval_request
+            baseColumnNames: user_pk
+            constraintName: user_pk_fkey
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedTableName: user
+            referencedColumnNames: pk
+        - addForeignKeyConstraint:
+            baseTableName: approval_request
+            baseColumnNames: organisation_pk
+            constraintName: organisation_pk_fkey
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedTableName: organisation
+            referencedColumnNames: pk

@@ -1,0 +1,88 @@
+---
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Raman Salauyou
+      changes:
+        - createTable:
+            tableName: role
+            columns:
+              - column:
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: role_pkey
+                  name: pk
+                  type: SERIAL
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR
+              - column:
+                  constraints:
+                    nullable: false
+                  name: organisation
+                  type: VARCHAR
+        - addUniqueConstraint:
+            columnNames: name, organisation
+            tableName: role
+            constraintName: role_name_organisation_uckey
+
+  - changeSet:
+      id: 2
+      author: Raman Salauyou
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: organisation
+            baseTableName: role
+            constraintName: organisation_name_fkey
+            onDelete: CASCADE
+            referencedColumnNames: name
+            referencedTableName: organisation
+
+  - changeSet:
+      id: 3
+      author: Raman Salauyou
+      changes:
+        - createTable:
+            tableName: role_has_permission
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: role_pk
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: permission_name
+                  type: VARCHAR
+        - addUniqueConstraint:
+            columnNames: role_pk, permission_name
+            tableName: role_has_permission
+            constraintName: role_pk_permission_name_uckey
+
+  - changeSet:
+      id: 4
+      author: Raman Salauyou
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: role_pk
+            baseTableName: role_has_permission
+            constraintName: role_pk_fkey
+            onDelete: CASCADE
+            referencedColumnNames: pk
+            referencedTableName: role
+
+  - changeSet:
+      id: 5
+      author: Raman Salauyou
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: permission_name
+            baseTableName: role_has_permission
+            constraintName: permission_name_fkey
+            onDelete: CASCADE
+            referencedColumnNames: name
+            referencedTableName: permission
+...

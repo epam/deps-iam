@@ -1,0 +1,97 @@
+databaseChangeLog:
+- changeSet:
+    id: policy_table
+    author: Anton Navarka
+    changes:
+    - createTable:
+        tableName: policy
+        columns:
+        - column:
+            name: id
+            type: VARCHAR
+            constraints:
+              primaryKey: true
+    rollback:
+    - dropTable:
+        tableName: policy
+
+- changeSet:
+    id: statement_table
+    author: Anton Navarka
+    changes:
+    - createTable:
+        tableName: statement
+        columns:
+        - column:
+            name: policy_id
+            type: VARCHAR
+            constraints:
+              nullable: false
+              foreignKeyName: fk_policy_id
+              references: policy(id)
+              deleteCascade: true
+        - column:
+            name: effect
+            type: VARCHAR
+            constraints:
+              nullable: false
+        - column:
+            name: actions
+            type: JSONB
+            constraints:
+              nullable: false
+        - column:
+            name: resources
+            type: JSONB
+            constraints:
+              nullable: false
+        - column:
+            name: principals
+            type: JSONB
+            constraints:
+              nullable: true
+        - createIndex:
+            columns:
+              - column:
+                  name: policy_id
+            tableName: statement
+    rollback:
+    - dropTable:
+        tableName: statement
+- changeSet:
+    id: resource_policy_statement_mapping_table
+    author: Anton Navarka
+    changes:
+    - createTable:
+        tableName: resource_has_policy
+        columns:
+        - column:
+            name: resource
+            type: VARCHAR
+            constraints:
+              nullable: false
+              unique: false
+        - column:
+            name: policy_id
+            type: VARCHAR
+            constraints:
+              nullable: false
+              foreignKeyName: fk_policy_id
+              references: policy(id)
+              deleteCascade: true
+    - addPrimaryKey:
+        columnNames: "resource,policy_id"
+        tableName: resource_has_policy
+    - createIndex:
+        columns:
+        - column:
+            name: resource
+        tableName: resource_has_policy
+    - createIndex:
+        columns:
+        - column:
+            name: policy_id
+        tableName: resource_has_policy
+    rollback:
+    - dropTable:
+        tableName: resource_has_policy

@@ -1,0 +1,14 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: Aliaksandr Tsiustsin
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+              primaryKeyName: name_pk
+            name: name
+            type: VARCHAR
+        tableName: permission

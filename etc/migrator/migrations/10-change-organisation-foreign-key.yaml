@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Dzmitry Orgish
+      changes:
+        - dropForeignKeyConstraint:
+            constraintName: organisation_name_fkey
+            baseTableName: user
+        - dropForeignKeyConstraint:
+            constraintName: organisation_name_fkey
+            baseTableName: role
+        - dropUniqueConstraint:
+            constraintName: organisation_unique_name_constraint
+            tableName: organisation
+            uniqueColumns: name
+        - dropColumn:
+            columnName: pk
+            tableName: organisation
+        - addColumn:
+            tableName: organisation
+            columns:
+              - column:
+                  name: pk
+                  type: VARCHAR
+        - sql: 
+            sql: update organisation set pk = name
+        - addPrimaryKey:
+            columnNames: pk
+            tableName: organisation
+            constraintName: organisation_pk
+        - addForeignKeyConstraint:
+            constraintName: organisation_pk_fkey
+            baseColumnNames: organisation
+            baseTableName: user
+            onDelete: set null
+            referencedColumnNames: pk
+            referencedTableName: organisation
+        - addForeignKeyConstraint:
+            constraintName: organisation_pk_fkey
+            baseColumnNames: organisation
+            baseTableName: role
+            onDelete: CASCADE
+            referencedColumnNames: pk
+            referencedTableName: organisation

@@ -1,0 +1,35 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: Siarhei Shveadko
+    changes:
+    - sql:
+        sql: |
+          DELETE FROM "user" WHERE deleted is True
+
+    rollback:
+    - sql:
+        sql: |
+          -- WARNING: Data lost during DELETE operation cannot be restored.
+          -- No proper rollback is defined for deleted rows. Here we use SELECT 1 as a placeholder.
+          SELECT 1;
+
+- changeSet:
+    id: 2
+    author: Siarhei Shvedako
+    changes:
+    - dropColumn:
+        tableName: user
+        columnName: deleted
+    rollback:
+    - addColumn:
+        tableName: user
+        columns:
+          - column:
+              name: deleted
+              type: BOOLEAN
+              defaultValue: false
+    - sql:
+        sql: |
+          UPDATE "user" SET deleted = FALSE WHERE deleted IS NULL;
+

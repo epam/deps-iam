@@ -1,0 +1,14 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: Elchyn Cheliabiyeu
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+              primaryKeyName: document_type_pkey
+            name: code
+            type: VARCHAR
+        tableName: type

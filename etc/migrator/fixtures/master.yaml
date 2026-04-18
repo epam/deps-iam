@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: ./fixtures/permission.yaml
+  - include:
+      file: ./fixtures/organisation.yaml

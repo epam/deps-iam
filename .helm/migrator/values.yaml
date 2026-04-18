@@ -1,0 +1,186 @@
+# Default values for deps-backend.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Secrets declaration
+# Precreate them before deploy
+# kubectl create secret generic celery-broker-url --from-literal=celery-broker-url=<pyamqp://USERNAME:PASSWORD@RABBITMQ_SERVICE:5672/VHOST>
+# kubectl create secret generic celery-backend-url --from-literal=celery-backend-url=<redis://:PASSWORD@REDIS_SERVICE:6379/0>
+# kubectl create secret generic app-secret-key --from-literal=app-secret-key='<APP_SECRET_KEY>'
+# kubectl create secret generic database-user-secret --from-literal=database-user-secret='<database-user-password>'
+# kubectl create secret generic database-work-user-secret --from-literal=database-work-user-secret='<database-work-user-secret>'
+# kubectl create secret generic keycloak-certs-endpoint --from-literal=keycloak-certs-endpoint='<https://KEYCLOAK_URL/auth/realms/Test/protocol/openid-connect/certs>'
+# kubectl create secret generic database-host --from-literal=database-host='<DATABASE_HOST>'
+
+secrets:
+  app_secret_key:
+    secretName: app-secret-key
+  iam_database:
+    secretName: iam-database
+  api_key:
+    secretName: api-key
+  keycloak_certs_endpoint:
+    secretName: keycloak-certs-endpoint
+  common_secret:
+    secretName: common-secret
+  database_ssl_secret:
+    secretName: database-ssl-secret
+  deps_iam_migrator:
+    secretName: deps-iam-migrator
+
+helm_logs_job:
+  serviceAccountName: gitlab-ci
+  image:
+    path: "/base/kubernetes-helm"
+    pullPolicy: IfNotPresent
+    tag: "0.1.1"
+  resources: {}
+
+registry: ""
+env: ""
+
+iam:
+  replicaCount: 1
+  image:
+    path: "/deps-dev-x01/deps-iam-api"
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: artifactory
+  service:
+    type: ClusterIP
+    port: 8000
+  resources:
+    limits:
+      cpu: 200m
+      memory: 800Mi
+    requests:
+      cpu: 100m
+      memory: 350Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+migrator:
+  image:
+    path: "/deps-dev-x01/deps-iam-migrator"
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: artifactory
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  args: ''
+
+fixtures:
+  image:
+    path: "/deps-dev-x01/deps-iam-migrator"
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: artifactory
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+iam_settings:
+    ENV: development
+
+    DATABASE_PORT: '5432'
+
+    AUTH_VERIFY_SSL: false
+    FEATURE_PERSONAL_ORG: true
+    API_KEY_AUTH: true
+
+migration_settings:
+  DATABASE_PORT: '5432'
+  DATABASE_REQUIRE_SECURE_TRANSPORT: false
+  DATABASE_SSLKEY_PATH: '/home/dbcerts/tls.key'
+  DATABASE_SSLCERT_PATH: '/home/dbcerts/tls.crt'
+  DATABASE_SSLROOTCERT_PATH: '/home/dbcerts/root.crt'
+
+certs_location:
+  database_sslcerts_path: "/home/dbcerts"
+
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+csi:
+  csi_default_name: deps-iam-migrator
+  vault_namespace: 'k8s-dev'
+  roleName: 'k8s-dev'
+  vaultKubernetesMountPath: 'kubernetes-dev'
+
+secrets_location:
+  secrets_default_path: "/mnt/secrets-store"
+
+service_account:
+  serviceAccountName: 'deps-develop'
+
+secret_project_id:
+  id: ""
+
+azure_kv_settings:
+  keyvaultName: ""
+  tenantId: ""
+  userAssignedIdentityID: ""
+  resourceGroup: ""
+  subscriptionId: ""
+
+vault_settings:
+  enabled: false
+  hashicorp_vault: false
+  azure_key_vault: false
+  gcp_secret_manager: false
+  aws_secret_manager: false
+  aws_secret_manager_region: ''
+
+vault_enabled:
+  env:
+    - name: DATABASE_HOST
+      valueFrom:
+        secretKeyRef:
+          name: deps-iam-migrator
+          key: db-host
+    - name: DATABASE_USER
+      valueFrom:
+        secretKeyRef:
+          name: deps-iam-migrator
+          key: iam-db-user
+    - name: DATABASE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: deps-iam-migrator
+          key: iam-db-password
+    - name: DATABASE_DB
+      valueFrom:
+        secretKeyRef:
+          name: deps-iam-migrator
+          key: iam-db
+
+vault_disabled:
+  env:
+    - name: DATABASE_HOST
+      valueFrom:
+        secretKeyRef:
+          name: common-secret
+          key: database-host
+    - name: DATABASE_USER
+      valueFrom:
+        secretKeyRef:
+          name: iam-database
+          key: user
+    - name: DATABASE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: iam-database
+          key: password
+    - name: DATABASE_DB
+      valueFrom:
+        secretKeyRef:
+          name: iam-database
+          key: database-db

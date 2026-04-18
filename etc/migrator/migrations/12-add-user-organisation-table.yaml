@@ -1,0 +1,54 @@
+databaseChangeLog:
+
+- changeSet:
+    id: 1
+    author: Siarhei Shveadko
+    changes:
+    - createTable:
+        columns:
+        - column:
+            name: user_pk
+            type: VARCHAR
+        - column:
+            name: organisation_pk
+            type: VARCHAR        
+        tableName: user_organisation
+    rollback:
+      - dropTable:
+        - tableName: user_organisation
+
+- changeSet:
+    id: 2
+    author: Siarhei Shveadko
+    changes:
+    - addForeignKeyConstraint:
+        baseTableName: user_organisation
+        baseColumnNames: user_pk
+        constraintName: user_organisation__user_pk_fkey
+        onDelete: CASCADE
+        onUpdate: CASCADE
+        referencedTableName: user
+        referencedColumnNames: pk
+    - addForeignKeyConstraint:
+        baseTableName: user_organisation
+        baseColumnNames: organisation_pk
+        constraintName: user_organisation__organisation_pk_fkey
+        onDelete: CASCADE
+        onUpdate: CASCADE
+        referencedTableName: organisation
+        referencedColumnNames: pk
+    - addPrimaryKey:
+        tableName: user_organisation
+        columnNames: user_pk, organisation_pk
+        constraintName: user_organisation_pkey
+
+- changeSet:
+    id: 3
+    author: Siarhei Shviadko
+    changes:
+        sql: INSERT INTO user_organisation (user_pk, organisation_pk) SELECT u.pk, organisation.pk FROM "user" u  INNER JOIN organisation ON organisation.pk = u.organisation;
+
+    rollback:
+        - sql:
+            comment: delete_data_from_user_organisation_table
+            sql: DELETE FROM user_organisation;

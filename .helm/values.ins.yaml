@@ -1,0 +1,45 @@
+iam:
+  image:
+    path: "/deps-platform/deps-iam-api"
+  resources:
+    limits:
+      cpu:
+      memory:
+    requests:
+      cpu:
+      memory:
+
+
+iam_consumer:
+  image:
+    path: "/deps-platform/deps-iam-api"
+
+polling_publisher:
+  image:
+    path: "/deps-platform/deps-iam-polling-publisher"
+
+migrator:
+  image:
+    path: "/deps-platform/deps-iam-migrator"
+
+fixtures:
+  image:
+    path: "/deps-platform/deps-iam-migrator"
+
+iam_settings:
+  ENV: ins
+  DATABASE_REQUIRE_SECURE_TRANSPORT: true
+
+migration_settings:
+  DATABASE_REQUIRE_SECURE_TRANSPORT: true
+
+helm:
+  helm_logs_job_enabled: false
+
+csi:
+  vault_namespace: 'k8s-ins'
+  roleName: 'k8s-ins'
+  vaultKubernetesMountPath: 'kubernetes-ins'
+
+service_account:
+  serviceAccountName: 'deps-insurance'

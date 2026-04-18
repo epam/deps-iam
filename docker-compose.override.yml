@@ -1,0 +1,103 @@
+version: "3.4"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./etc/api/Dockerfile
+      target: develop
+      args:
+        REPOSITORY_URL: "${REPOSITORY_URL}"
+      cache_from:
+        - "iam-api-dev:latest"
+    env_file:
+      - ./etc/api/env/.dev.env
+      - .env
+    networks:
+      - deps-network
+    ports:
+      - '8777:8000'
+    volumes:
+      - ./vendors:/vendors
+      - ./src/deps_iam:/app/deps_iam
+      - ./src/tests:/app/tests
+      - ./src/poetry.lock:/app/poetry.lock
+      - ./src/pyproject.toml:/app/pyproject.toml
+      - ./src/setup.cfg:/app/setup.cfg
+      - ./src/requirements.txt:/app/requirements.txt
+    environment:
+      WDB_SOCKET_SERVER: wdb
+      WDB_NO_BROWSER_AUTO_OPEN: "True"
+
+  iam-consumer:
+    container_name: deps-iam-consumer
+    build:
+      context: .
+      dockerfile: ./etc/api/Dockerfile
+      target: develop
+      args:
+        REPOSITORY_URL: "${REPOSITORY_URL}"
+      cache_from:
+        - "iam-api-dev:latest"
+    env_file:
+      - ./etc/api/env/.dev.env
+      - .env
+    networks:
+      - deps-network
+    volumes:
+      - ./vendors:/vendors
+      - ./src/deps_iam:/app/deps_iam
+      - ./src/tests:/app/tests
+      - ./src/poetry.lock:/app/poetry.lock
+      - ./src/pyproject.toml:/app/pyproject.toml
+      - ./src/setup.cfg:/app/setup.cfg
+      - ./src/requirements.txt:/app/requirements.txt
+
+  polling_publisher:
+    build:
+      context: ./vendors/deps-polling-publisher
+      dockerfile: ./etc/deps-polling-publisher/Dockerfile
+      target: develop
+      args:
+        REPOSITORY_URL: "${REPOSITORY_URL}"
+      cache_from:
+        - "iam-polling-publisher:latest"
+    networks:
+      - deps-network
+    env_file:
+      - ./etc/api/env/.dev.env
+      - .env
+
+  migrator:
+    build:
+      context: .
+      dockerfile: ./etc/migrator/Dockerfile
+      args:
+        REPOSITORY_URL: "${REPOSITORY_URL}"
+      cache_from:
+        - "iam-migrator:latest"
+    env_file: ./etc/migrator/env/.dev.env
+    networks:
+      - deps-network
+    volumes:
+      - ./etc/migrator/migrations:/app/migrations
+
+  fixtures:
+    build:
+      context: .
+      dockerfile: ./etc/migrator/Dockerfile
+      args:
+        REPOSITORY_URL: "${REPOSITORY_URL}"
+      cache_from:
+        - "iam-migrator:latest"
+    env_file: ./etc/migrator/env/.dev.env
+    environment:
+      - MASTER_CHANGELOG=./fixtures/master.yaml
+    networks:
+      - deps-network
+    volumes:
+      - ./etc/migrator/fixtures:/app/fixtures
+
+networks:
+  deps-network:
+    external: true
