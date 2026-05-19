@@ -31,7 +31,7 @@ fixedint==0.1.6
 googleapis-common-protos==1.70.0
 grpcio==1.73.1
 h11==0.16.0
-idna==3.10
+idna==3.15
 importlib_metadata==8.7.0
 isodate==0.7.2
 Jinja2==3.1.6
