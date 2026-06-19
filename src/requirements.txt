@@ -16,7 +16,7 @@ cffi==1.17.1
 charset-normalizer==3.4.2
 click==8.2.1
 confluent-kafka==2.6.1
-cryptography==45.0.4
+cryptography==48.0.1
 dependency-injector==4.48.1
 deps-asb==1.0.2
 deps-kafka==4.0.2
